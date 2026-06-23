@@ -20,6 +20,8 @@ if (-not $InstallDir) {
     $InstallDir = Join-Path $env:LOCALAPPDATA "Programs\OTPlotViewer"
 }
 
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $SevenZip = Join-Path $ScriptRoot "7z.exe"
 if (-not (Test-Path -LiteralPath $SevenZip)) {
@@ -36,12 +38,39 @@ function Download-File {
         [string]$Url,
         [string]$OutFile
     )
-    Write-Host "Downloading $Url"
-    try {
-        Start-BitsTransfer -Source $Url -Destination $OutFile -ErrorAction Stop
-    } catch {
-        Invoke-WebRequest -Uri $Url -OutFile $OutFile -UseBasicParsing
+    $maxAttempts = 4
+    for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+        Write-Host "Downloading $Url (attempt $attempt/$maxAttempts)"
+        Remove-Item -LiteralPath $OutFile -Force -ErrorAction SilentlyContinue
+
+        try {
+            Start-BitsTransfer -Source $Url -Destination $OutFile -ErrorAction Stop
+            if (Test-Path -LiteralPath $OutFile) { return }
+        } catch {
+            Write-Host "BITS download failed: $($_.Exception.Message)"
+        }
+
+        try {
+            Invoke-WebRequest -Uri $Url -OutFile $OutFile -UseBasicParsing -ErrorAction Stop
+            if (Test-Path -LiteralPath $OutFile) { return }
+        } catch {
+            Write-Host "PowerShell download failed: $($_.Exception.Message)"
+        }
+
+        $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
+        if ($curl) {
+            try {
+                & $curl.Source -L --retry 5 --retry-delay 2 --fail --output $OutFile $Url
+                if ($LASTEXITCODE -eq 0 -and (Test-Path -LiteralPath $OutFile)) { return }
+                Write-Host "curl download failed with exit code $LASTEXITCODE"
+            } catch {
+                Write-Host "curl download failed: $($_.Exception.Message)"
+            }
+        }
+
+        Start-Sleep -Seconds ([Math]::Min(3 * $attempt, 12))
     }
+    throw "Failed to download $Url after $maxAttempts attempts."
 }
 
 try {
