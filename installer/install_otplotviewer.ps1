@@ -98,7 +98,6 @@ try {
 
     $ExePath = Join-Path $InstallDir "OTPlotViewer.exe"
     $StartMenuDir = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\OTPlotViewer"
-    New-Item -ItemType Directory -Path $StartMenuDir -Force | Out-Null
 
     $UninstallScript = Join-Path $InstallDir "uninstall_otplotviewer.ps1"
     @"
@@ -110,6 +109,8 @@ Write-Host "OTPlotViewer has been uninstalled."
 "@ | Set-Content -LiteralPath $UninstallScript -Encoding UTF8
 
     if (-not $NoShortcuts) {
+        New-Item -ItemType Directory -Path $StartMenuDir -Force | Out-Null
+
         $Shell = New-Object -ComObject WScript.Shell
 
         $DesktopShortcut = Join-Path ([Environment]::GetFolderPath("Desktop")) "OTPlotViewer.lnk"
