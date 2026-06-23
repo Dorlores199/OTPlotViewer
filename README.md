@@ -1,58 +1,152 @@
 # OTPlotViewer
 
-Custom Python software for visualizing and exporting single-molecule optical tweezers data from Lumicks C-Trap H5 files.
+**OTPlotViewer** is a custom Python desktop tool for visualizing and exporting single-molecule optical tweezers data from Lumicks C-Trap `.h5` files.
 
-This archived version focuses on kymograph and force-distance analysis. It provides:
+**OTPlotViewer** 是一个用于 Lumicks C-Trap `.h5` 文件的单分子光镊数据可视化与导出软件。
 
-- RGB kymograph visualization with adjustable channel ranges and pseudocolors.
-- Interactive box selection on kymographs.
+![Main window](assets/screenshots/main_window.png)
+
+## Features / 功能
+
+- RGB kymograph visualization with adjustable channel ranges, gamma, and pseudocolors.
+- Interactive box selection on kymographs for region-based analysis.
 - Photon count versus time for selected kymograph regions.
 - Photon count versus position for selected kymograph regions.
-- Force, distance, and force-distance plotting.
-- PNG and Excel export.
-- Windows packaging with PyInstaller.
+- Force, distance, and force-distance curve plotting.
+- PNG export and Excel export.
+- Windows folder-style distribution using PyInstaller.
 
-## Requirements
+中文功能概述：
 
-The software was developed and tested with Python and the packages listed in `requirements.txt`, including:
+- 显示 RGB kymograph，并支持调节各通道的最小值、最大值、gamma 和伪彩色。
+- 支持在 kymograph 图上框选区域，用于区域统计。
+- 对框选区域导出 photon count versus time。
+- 对框选区域导出 photon count versus position。
+- 支持 force、distance 和 force-distance 曲线绘制。
+- 支持 PNG 和 Excel 导出。
+- 支持用 PyInstaller 打包为 Windows 可分发文件夹版本。
+
+## Interface / 界面
+
+### Control Panel / 左侧控制区
+
+![Control panel](assets/screenshots/controls_panel.png)
+
+The left panel is used to select an input folder, choose the data type, control displayed panels, adjust image/style settings, and export figures or tables.
+
+左侧控制区用于选择输入文件夹、切换数据类型、控制显示面板、调节图像/样式参数，以及导出图片和表格。
+
+### Preview Area / 右侧预览区
+
+![Preview area](assets/screenshots/preview_area.png)
+
+The right preview area displays the selected kymograph, traces, and analysis panels. In kymograph mode, users can drag a box on the image to update the selected time and image-position ranges.
+
+右侧预览区显示所选 kymograph、曲线和分析面板。在 kymograph 模式下，可以直接在图像上拖拽框选区域，软件会自动更新所选时间范围和图像位置范围。
+
+## Basic Usage / 基本使用方法
+
+1. Open `OTPlotViewer.exe`.
+2. Click **Browse...** next to **Input folder** and select a folder containing `.h5` files.
+3. Choose the data type: **Kymograph**, **FD Curve**, or **Scan**.
+4. Select a file from the file dropdown.
+5. In **Panels**, choose which panels to display and export.
+6. In **RGB image**, adjust red/green/blue channel settings if needed.
+7. In kymograph mode, drag a box on the kymograph to analyze a region.
+8. Use **Save current PNG**, **Save all to PNG**, **Export current Excel**, or **Export all to Excel** to export results.
+
+中文步骤：
+
+1. 打开 `OTPlotViewer.exe`。
+2. 在 **Input folder** 旁点击 **Browse...**，选择包含 `.h5` 文件的文件夹。
+3. 选择数据类型：**Kymograph**、**FD Curve** 或 **Scan**。
+4. 从文件下拉框中选择需要分析的文件。
+5. 在 **Panels** 中勾选需要显示和导出的面板。
+6. 如有需要，在 **RGB image** 中调节红、绿、蓝通道参数。
+7. 在 kymograph 模式下，直接在图像上拖拽框选需要统计的区域。
+8. 使用 **Save current PNG**、**Save all to PNG**、**Export current Excel** 或 **Export all to Excel** 导出结果。
+
+## Dependencies / 依赖
+
+The software was developed and tested with Python packages listed in `requirements.txt`:
 
 - `lumicks.pylake`
+- `h5py`
 - `numpy`
 - `pandas`
 - `matplotlib`
-- `h5py`
 - `openpyxl`
 
-In this version, `lumicks.pylake` is used through `lumicks.pylake.File` to open C-Trap H5 files and access kymograph objects. The code uses Pylake kymograph methods/properties including `file.kymos`, `kymo.get_image("red"/"green"/"blue")`, `kymo.line_timestamp_ranges()`, `kymo.pixelsize_um`, `kymo.line_time_seconds`, and `kymo.pixel_time_seconds`. Force and distance time-series datasets are read directly from the HDF5 file with `h5py`.
+In this version, `lumicks.pylake` is used through `lumicks.pylake.File` to open C-Trap `.h5` files and access kymograph objects. Specifically, the software uses:
 
-## Run From Source
+- `lk.File(h5_path)`
+- `file_handle.kymos`
+- `kymo.get_image("red")`
+- `kymo.get_image("green")`
+- `kymo.get_image("blue")`
+- `kymo.line_timestamp_ranges()`
+- `kymo.pixelsize_um`
+- `kymo.line_time_seconds`
+- `kymo.pixel_time_seconds`
+
+Force and distance time-series datasets are read directly from the HDF5 file with `h5py`. Downstream image processing, photon-count calculations, plotting, and table export are performed with NumPy, Matplotlib, Pandas, and OpenPyXL.
+
+本版本中，`lumicks.pylake` 主要通过 `lumicks.pylake.File` 打开 C-Trap `.h5` 文件，并读取 kymograph 对象及其图像/时间/像素尺寸信息。实际使用到的 Pylake 接口包括：
+
+- `lk.File(h5_path)`
+- `file_handle.kymos`
+- `kymo.get_image("red")`
+- `kymo.get_image("green")`
+- `kymo.get_image("blue")`
+- `kymo.line_timestamp_ranges()`
+- `kymo.pixelsize_um`
+- `kymo.line_time_seconds`
+- `kymo.pixel_time_seconds`
+
+Force 和 distance 时间序列则使用 `h5py` 直接从 HDF5 数据集中读取。后续图像处理、photon count 计算、绘图和表格导出由 NumPy、Matplotlib、Pandas 和 OpenPyXL 完成。
+
+## Run From Source / 从源码运行
 
 ```powershell
 python kymograph_force_distance_ui.py
 ```
 
-## Build A Windows Distribution
+## Build Windows Distribution / 打包 Windows 可分发版本
 
-Install packaging dependencies first:
+Install packaging dependencies:
 
 ```powershell
 python -m pip install -r requirements-packaging.txt
 ```
 
-Then build the folder distribution:
+Build the folder distribution:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\build_windows.ps1 -PythonExe "C:\Path\To\python.exe"
 ```
 
-The folder distribution is recommended for sharing because it is more reliable than a single-file executable for scientific Python applications with native dependencies.
+The folder distribution is recommended for sharing because scientific Python applications often include native dependencies.
 
-## Suggested Citation Text
+推荐使用文件夹版进行分发，因为科学计算 Python 程序通常包含较多原生依赖库，文件夹版比单文件版更稳定。
 
-Kymographs were processed and visualized using custom Python software (`OTPlotViewer`, GitHub URL). The software uses `lumicks.pylake.File` to access C-Trap kymograph objects and metadata, while force and distance time series are read from HDF5 datasets using `h5py`; downstream image processing, plotting, and data export are performed with NumPy, Matplotlib, Pandas, and OpenPyXL.
+## Suggested Citation / 论文引用建议
 
-Replace `GitHub URL` with the final repository link after upload.
+Replace the URL below with the final repository or release URL.
 
-## Notes
+请将下面的 URL 替换为最终 GitHub 仓库或 release 链接。
 
-This repository contains the source code and packaging files. Large packaged Windows distributions should be attached through GitHub Releases rather than committed directly to the repository.
+```text
+Kymographs were processed and visualized using OTPlotViewer (v1.0.0; GitHub URL), a custom Python software package. The software uses lumicks.pylake.File to access C-Trap kymograph objects and metadata, including kymograph images, line timestamp ranges, pixel size, line time, and pixel time. Force and distance time series were read from HDF5 datasets using h5py. Downstream photon-count analysis, force-distance plotting, visualization, and data export were performed using NumPy, Matplotlib, Pandas, and OpenPyXL.
+```
+
+中文参考：
+
+```text
+Kymograph 数据使用自定义 Python 软件 OTPlotViewer (v1.0.0; GitHub URL) 进行处理和可视化。该软件使用 lumicks.pylake.File 读取 C-Trap kymograph 对象及其元数据，包括 kymograph 图像、line timestamp ranges、pixel size、line time 和 pixel time。Force 和 distance 时间序列使用 h5py 从 HDF5 数据集中读取。后续 photon-count 分析、force-distance 绘图、可视化和数据导出使用 NumPy、Matplotlib、Pandas 和 OpenPyXL 完成。
+```
+
+## License / 许可
+
+No license file is included in this archived version. Add a license before public redistribution if required by your publication or institution.
+
+当前归档版本尚未包含许可证文件。如需公开长期分发，建议根据文章或单位要求补充许可证。
