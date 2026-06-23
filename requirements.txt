@@ -1,0 +1,6 @@
+h5py
+lumicks.pylake
+matplotlib
+numpy
+openpyxl
+pandas

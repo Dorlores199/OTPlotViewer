@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite this repository."
+title: "OTPlotViewer"
+type: software
+authors:
+  - family-names: "Chen"
+    given-names: "Lishuang"
+version: "1.0.0"
+date-released: "2026-06-23"
+abstract: "Custom Python software for visualizing kymograph, photon count, force, distance, and force-distance data from single-molecule optical tweezers H5 files."
+keywords:
+  - optical tweezers
+  - single-molecule biophysics
+  - kymograph
+  - photon count
+  - force-distance curve
+  - lumicks pylake
+license: "NOASSERTION"
