@@ -1,6 +1,7 @@
 param(
     [string]$InstallDir = "",
-    [switch]$NoLaunch
+    [switch]$NoLaunch,
+    [switch]$NoShortcuts
 )
 
 $ErrorActionPreference = "Stop"
@@ -108,28 +109,30 @@ Remove-Item -LiteralPath "$InstallDir" -Recurse -Force
 Write-Host "OTPlotViewer has been uninstalled."
 "@ | Set-Content -LiteralPath $UninstallScript -Encoding UTF8
 
-    $Shell = New-Object -ComObject WScript.Shell
+    if (-not $NoShortcuts) {
+        $Shell = New-Object -ComObject WScript.Shell
 
-    $DesktopShortcut = Join-Path ([Environment]::GetFolderPath("Desktop")) "OTPlotViewer.lnk"
-    $Shortcut = $Shell.CreateShortcut($DesktopShortcut)
-    $Shortcut.TargetPath = $ExePath
-    $Shortcut.WorkingDirectory = $InstallDir
-    $Shortcut.IconLocation = $ExePath
-    $Shortcut.Save()
+        $DesktopShortcut = Join-Path ([Environment]::GetFolderPath("Desktop")) "OTPlotViewer.lnk"
+        $Shortcut = $Shell.CreateShortcut($DesktopShortcut)
+        $Shortcut.TargetPath = $ExePath
+        $Shortcut.WorkingDirectory = $InstallDir
+        $Shortcut.IconLocation = $ExePath
+        $Shortcut.Save()
 
-    $StartShortcut = Join-Path $StartMenuDir "OTPlotViewer.lnk"
-    $Shortcut = $Shell.CreateShortcut($StartShortcut)
-    $Shortcut.TargetPath = $ExePath
-    $Shortcut.WorkingDirectory = $InstallDir
-    $Shortcut.IconLocation = $ExePath
-    $Shortcut.Save()
+        $StartShortcut = Join-Path $StartMenuDir "OTPlotViewer.lnk"
+        $Shortcut = $Shell.CreateShortcut($StartShortcut)
+        $Shortcut.TargetPath = $ExePath
+        $Shortcut.WorkingDirectory = $InstallDir
+        $Shortcut.IconLocation = $ExePath
+        $Shortcut.Save()
 
-    $UninstallShortcut = Join-Path $StartMenuDir "Uninstall OTPlotViewer.lnk"
-    $Shortcut = $Shell.CreateShortcut($UninstallShortcut)
-    $Shortcut.TargetPath = "powershell.exe"
-    $Shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$UninstallScript`""
-    $Shortcut.WorkingDirectory = $InstallDir
-    $Shortcut.Save()
+        $UninstallShortcut = Join-Path $StartMenuDir "Uninstall OTPlotViewer.lnk"
+        $Shortcut = $Shell.CreateShortcut($UninstallShortcut)
+        $Shortcut.TargetPath = "powershell.exe"
+        $Shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$UninstallScript`""
+        $Shortcut.WorkingDirectory = $InstallDir
+        $Shortcut.Save()
+    }
 
     Write-Host ""
     Write-Host "OTPlotViewer $Version was installed to:"
