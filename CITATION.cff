@@ -7,6 +7,7 @@ authors:
     given-names: "Lishuang"
 version: "1.0.0"
 date-released: "2026-06-23"
+repository-code: "https://github.com/Dorlores199/OTPlotViewer"
 abstract: "Custom Python software for visualizing kymograph, photon count, force, distance, and force-distance data from single-molecule optical tweezers H5 files."
 keywords:
   - optical tweezers

@@ -131,18 +131,30 @@ The folder distribution is recommended for sharing because scientific Python app
 
 ## Suggested Citation / 论文引用建议
 
-Replace the URL below with the final repository or release URL.
+Repository URL:
 
-请将下面的 URL 替换为最终 GitHub 仓库或 release 链接。
+`https://github.com/Dorlores199/OTPlotViewer`
+
+Version-specific release URL:
+
+`https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.0`
+
+仓库链接：
+
+`https://github.com/Dorlores199/OTPlotViewer`
+
+固定版本 release 链接：
+
+`https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.0`
 
 ```text
-Kymographs were processed and visualized using OTPlotViewer (v1.0.0; GitHub URL), a custom Python software package. The software uses lumicks.pylake.File to access C-Trap kymograph objects and metadata, including kymograph images, line timestamp ranges, pixel size, line time, and pixel time. Force and distance time series were read from HDF5 datasets using h5py. Downstream photon-count analysis, force-distance plotting, visualization, and data export were performed using NumPy, Matplotlib, Pandas, and OpenPyXL.
+Kymographs were processed and visualized using OTPlotViewer (v1.0.0; https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.0), a custom Python software package. The software uses lumicks.pylake.File to access C-Trap kymograph objects and metadata, including kymograph images, line timestamp ranges, pixel size, line time, and pixel time. Force and distance time series were read from HDF5 datasets using h5py. Downstream photon-count analysis, force-distance plotting, visualization, and data export were performed using NumPy, Matplotlib, Pandas, and OpenPyXL.
 ```
 
 中文参考：
 
 ```text
-Kymograph 数据使用自定义 Python 软件 OTPlotViewer (v1.0.0; GitHub URL) 进行处理和可视化。该软件使用 lumicks.pylake.File 读取 C-Trap kymograph 对象及其元数据，包括 kymograph 图像、line timestamp ranges、pixel size、line time 和 pixel time。Force 和 distance 时间序列使用 h5py 从 HDF5 数据集中读取。后续 photon-count 分析、force-distance 绘图、可视化和数据导出使用 NumPy、Matplotlib、Pandas 和 OpenPyXL 完成。
+Kymograph 数据使用自定义 Python 软件 OTPlotViewer (v1.0.0; https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.0) 进行处理和可视化。该软件使用 lumicks.pylake.File 读取 C-Trap kymograph 对象及其元数据，包括 kymograph 图像、line timestamp ranges、pixel size、line time 和 pixel time。Force 和 distance 时间序列使用 h5py 从 HDF5 数据集中读取。后续 photon-count 分析、force-distance 绘图、可视化和数据导出使用 NumPy、Matplotlib、Pandas 和 OpenPyXL 完成。
 ```
 
 ## License / 许可
