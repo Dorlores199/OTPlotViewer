@@ -1,5 +1,5 @@
 param(
-    [string]$Version = "v1.0.1",
+    [string]$Version = "v1.0.2",
     [string]$OutputDir = "D:\chenlishuang_files\software_dp\OT_plot_backups\OT_plot_backup_20260428_215955\release"
 )
 

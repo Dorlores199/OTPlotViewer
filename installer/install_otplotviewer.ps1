@@ -6,9 +6,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$Version = "v1.0.1"
+$Version = "v1.0.2"
 $Repo = "Dorlores199/OTPlotViewer"
-$AssetPrefix = "OTPlotViewer_v1.0.1_windows_folder_split.7z"
+$AssetPrefix = "OTPlotViewer_v1.0.2_windows_folder_split.7z"
 $BaseUrl = "https://github.com/$Repo/releases/download/$Version"
 $PartNames = @(
     "$AssetPrefix.001",

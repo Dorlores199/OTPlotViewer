@@ -20,6 +20,7 @@ DEFAULT_FILES = []
 DEFAULT_BROWSE_DIR = os.path.expanduser("~")
 
 FORCE_DS = "Force LF/Force 2x"
+FORCE_FALLBACK_DS = (FORCE_DS, "Force HF/Force 2x")
 DIST_CHOICES = {
     "Distance/Distance 1": "Distance/Distance 1",
     "Force LF/Trap 1": "Force LF/Trap 1",
@@ -235,24 +236,119 @@ def hex_color_to_rgb(color_text):
     return np.array([int(normalized[idx:idx + 2], 16) for idx in (1, 3, 5)], dtype=np.float64) / 255.0
 
 
+def _resolve_h5_dataset_path(handle, path_or_paths):
+    candidates = (path_or_paths,) if isinstance(path_or_paths, str) else tuple(path_or_paths)
+    for path in candidates:
+        if path in handle:
+            return path
+    raise KeyError(f"Missing HDF5 dataset. Tried: {', '.join(candidates)}")
+
+
+def _open_h5_signal(handle, path_or_paths):
+    path = _resolve_h5_dataset_path(handle, path_or_paths)
+    ds = handle[path]
+    fields = ds.dtype.fields or {}
+    if "Timestamp" in fields and "Value" in fields:
+        timestamps = np.asarray(ds["Timestamp"], dtype=np.int64)
+        values = np.asarray(ds["Value"], dtype=np.float64)
+        if timestamps.size == 0:
+            raise ValueError(f"HDF5 dataset is empty: {path}")
+        return {
+            "kind": "timeseries",
+            "path": path,
+            "timestamps": timestamps,
+            "values": values,
+        }
+
+    if "Start time (ns)" in ds.attrs and "Sample rate (Hz)" in ds.attrs:
+        n_points = int(ds.shape[0]) if ds.shape else 0
+        if n_points <= 0:
+            raise ValueError(f"HDF5 dataset is empty: {path}")
+        start_ns = int(ds.attrs["Start time (ns)"])
+        sample_rate = float(ds.attrs["Sample rate (Hz)"])
+        stop_attr = ds.attrs.get("Stop time (ns)", None)
+        stop_ns = int(stop_attr) if stop_attr is not None else int(start_ns + (n_points - 1) * 1e9 / sample_rate)
+        return {
+            "kind": "continuous",
+            "path": path,
+            "dataset": ds,
+            "n_points": n_points,
+            "start_ns": start_ns,
+            "stop_ns": stop_ns,
+            "sample_rate": sample_rate,
+        }
+
+    raise ValueError(f"Unsupported HDF5 signal format: {path}")
+
+
+def _signal_start_ns(signal):
+    if signal["kind"] == "timeseries":
+        return int(signal["timestamps"][0])
+    return int(signal["start_ns"])
+
+
+def _signal_stop_ns(signal):
+    if signal["kind"] == "timeseries":
+        return int(signal["timestamps"][-1])
+    return int(signal["stop_ns"])
+
+
+def _choose_signal_timestamps(force_signal, dist_signal, max_points=12000):
+    if force_signal["kind"] == "timeseries":
+        return force_signal["timestamps"]
+    if dist_signal["kind"] == "timeseries":
+        return dist_signal["timestamps"]
+
+    start_ns = max(_signal_start_ns(force_signal), _signal_start_ns(dist_signal))
+    stop_ns = min(_signal_stop_ns(force_signal), _signal_stop_ns(dist_signal))
+    if stop_ns <= start_ns:
+        start_ns = min(_signal_start_ns(force_signal), _signal_start_ns(dist_signal))
+        stop_ns = max(_signal_stop_ns(force_signal), _signal_stop_ns(dist_signal))
+    n_points = max(2, min(max_points, force_signal["n_points"], dist_signal["n_points"]))
+    return np.linspace(start_ns, stop_ns, n_points).astype(np.int64)
+
+
+def _sample_signal_at_timestamps(signal, target_timestamps):
+    target_timestamps = np.asarray(target_timestamps, dtype=np.int64)
+    if signal["kind"] == "timeseries":
+        source_timestamps = signal["timestamps"]
+        values = signal["values"]
+        if source_timestamps.shape == target_timestamps.shape and np.array_equal(source_timestamps, target_timestamps):
+            return values
+        t0 = int(source_timestamps[0])
+        source_t = (source_timestamps - t0) / 1e9
+        target_t = (target_timestamps - t0) / 1e9
+        return np.interp(target_t, source_t, values)
+
+    n_points = signal["n_points"]
+    start_ns = signal["start_ns"]
+    sample_rate = signal["sample_rate"]
+    positions = (target_timestamps.astype(np.float64) - float(start_ns)) * sample_rate / 1e9
+    positions = np.clip(positions, 0.0, float(n_points - 1))
+    left = np.floor(positions).astype(np.int64)
+    right = np.clip(left + 1, 0, n_points - 1)
+    frac = positions - left
+
+    needed = np.unique(np.concatenate([left, right]))
+    samples = np.asarray(signal["dataset"][needed], dtype=np.float64)
+    left_values = samples[np.searchsorted(needed, left)]
+    right_values = samples[np.searchsorted(needed, right)]
+    return left_values * (1.0 - frac) + right_values * frac
+
+
 def h5_load_timeseries(h5_path, force_path, dist_path):
     with h5py.File(h5_path, "r") as handle:
-        ds_force = handle[force_path]
-        ts_force = ds_force["Timestamp"].astype(np.int64)
-        force = ds_force["Value"].astype(np.float64)
+        force_candidates = FORCE_FALLBACK_DS if force_path == FORCE_DS else force_path
+        force_signal = _open_h5_signal(handle, force_candidates)
+        dist_signal = _open_h5_signal(handle, dist_path)
+        target_timestamps = _choose_signal_timestamps(force_signal, dist_signal)
+        if target_timestamps.size == 0:
+            raise ValueError("No timestamps available for force/distance alignment.")
 
-        ds_dist = handle[dist_path]
-        ts_dist = ds_dist["Timestamp"].astype(np.int64)
-        dist = ds_dist["Value"].astype(np.float64)
-
-    t0 = ts_force[0]
-    t_force = (ts_force - t0) / 1e9
-
-    if ts_dist.shape == ts_force.shape and np.array_equal(ts_dist, ts_force):
-        dist_aligned = dist
-    else:
-        t_dist = (ts_dist - t0) / 1e9
-        dist_aligned = np.interp(t_force, t_dist, dist)
+        t0 = min(_signal_start_ns(force_signal), _signal_start_ns(dist_signal))
+        t_force = (target_timestamps - t0) / 1e9
+        force = _sample_signal_at_timestamps(force_signal, target_timestamps)
+        dist_aligned = _sample_signal_at_timestamps(dist_signal, target_timestamps)
 
     return t0, t_force, force, dist_aligned
 

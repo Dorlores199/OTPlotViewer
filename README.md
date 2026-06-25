@@ -1,4 +1,4 @@
-# OTPlotViewer
+﻿# OTPlotViewer
 
 **OTPlotViewer** is a custom Python desktop tool for visualizing and exporting single-molecule optical tweezers data from Lumicks C-Trap `.h5` files.
 
@@ -54,7 +54,7 @@ Go to the latest release page:
 
 Download:
 
-`OTPlotViewer_Setup_1.0.1.exe`
+`OTPlotViewer_Setup_1.0.2.exe`
 
 Double-click the installer. It will download the packaged OTPlotViewer application from GitHub, install it into the current user's local application folder, and create Desktop and Start Menu shortcuts. No Python, conda, or manual environment configuration is required.
 
@@ -64,7 +64,7 @@ Double-click the installer. It will download the packaged OTPlotViewer applicati
 
 下载：
 
-`OTPlotViewer_Setup_1.0.1.exe`
+`OTPlotViewer_Setup_1.0.2.exe`
 
 双击运行安装器。安装器会自动从 GitHub 下载 OTPlotViewer 应用包，安装到当前用户本地程序目录，并创建桌面和开始菜单快捷方式。用户不需要安装 Python、conda，也不需要手动配置环境。
 
@@ -72,19 +72,19 @@ Double-click the installer. It will download the packaged OTPlotViewer applicati
 
 If the one-click installer cannot download files automatically, download all split archive files from the release page:
 
-- `OTPlotViewer_v1.0.1_windows_folder_split.7z.001`
-- `OTPlotViewer_v1.0.1_windows_folder_split.7z.002`
-- `OTPlotViewer_v1.0.1_windows_folder_split.7z.003`
-- `OTPlotViewer_v1.0.1_windows_folder_split.7z.004`
+- `OTPlotViewer_v1.0.2_windows_folder_split.7z.001`
+- `OTPlotViewer_v1.0.2_windows_folder_split.7z.002`
+- `OTPlotViewer_v1.0.2_windows_folder_split.7z.003`
+- `OTPlotViewer_v1.0.2_windows_folder_split.7z.004`
 
 Put all four files in the same folder, then open/extract `.001` with 7-Zip. After extraction, run `OTPlotViewer.exe` inside the `OTPlotViewer` folder.
 
 如果一键安装器无法自动下载文件，可以从 release 页面手动下载所有分卷文件：
 
-- `OTPlotViewer_v1.0.1_windows_folder_split.7z.001`
-- `OTPlotViewer_v1.0.1_windows_folder_split.7z.002`
-- `OTPlotViewer_v1.0.1_windows_folder_split.7z.003`
-- `OTPlotViewer_v1.0.1_windows_folder_split.7z.004`
+- `OTPlotViewer_v1.0.2_windows_folder_split.7z.001`
+- `OTPlotViewer_v1.0.2_windows_folder_split.7z.002`
+- `OTPlotViewer_v1.0.2_windows_folder_split.7z.003`
+- `OTPlotViewer_v1.0.2_windows_folder_split.7z.004`
 
 把四个文件放在同一个文件夹中，然后用 7-Zip 解压 `.001` 文件。解压后进入 `OTPlotViewer` 文件夹，双击运行 `OTPlotViewer.exe`。
 
@@ -181,7 +181,7 @@ Repository URL:
 
 Version-specific release URL:
 
-`https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.1`
+`https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.2`
 
 仓库链接：
 
@@ -189,16 +189,16 @@ Version-specific release URL:
 
 固定版本 release 链接：
 
-`https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.1`
+`https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.2`
 
 ```text
-Kymographs were processed and visualized using OTPlotViewer (v1.0.1; https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.1), a custom Python software package. The software uses lumicks.pylake.File to access C-Trap kymograph objects and metadata, including kymograph images, line timestamp ranges, pixel size, line time, and pixel time. Force and distance time series were read from HDF5 datasets using h5py. Downstream photon-count analysis, force-distance plotting, visualization, and data export were performed using NumPy, Matplotlib, Pandas, and OpenPyXL.
+Kymographs were processed and visualized using OTPlotViewer (v1.0.2; https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.2), a custom Python software package. The software uses lumicks.pylake.File to access C-Trap kymograph objects and metadata, including kymograph images, line timestamp ranges, pixel size, line time, and pixel time. Force and distance time series were read from HDF5 datasets using h5py. Downstream photon-count analysis, force-distance plotting, visualization, and data export were performed using NumPy, Matplotlib, Pandas, and OpenPyXL.
 ```
 
 中文参考：
 
 ```text
-Kymograph 数据使用自定义 Python 软件 OTPlotViewer (v1.0.1; https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.1) 进行处理和可视化。该软件使用 lumicks.pylake.File 读取 C-Trap kymograph 对象及其元数据，包括 kymograph 图像、line timestamp ranges、pixel size、line time 和 pixel time。Force 和 distance 时间序列使用 h5py 从 HDF5 数据集中读取。后续 photon-count 分析、force-distance 绘图、可视化和数据导出使用 NumPy、Matplotlib、Pandas 和 OpenPyXL 完成。
+Kymograph 数据使用自定义 Python 软件 OTPlotViewer (v1.0.2; https://github.com/Dorlores199/OTPlotViewer/releases/tag/v1.0.2) 进行处理和可视化。该软件使用 lumicks.pylake.File 读取 C-Trap kymograph 对象及其元数据，包括 kymograph 图像、line timestamp ranges、pixel size、line time 和 pixel time。Force 和 distance 时间序列使用 h5py 从 HDF5 数据集中读取。后续 photon-count 分析、force-distance 绘图、可视化和数据导出使用 NumPy、Matplotlib、Pandas 和 OpenPyXL 完成。
 ```
 
 ## License / 许可
@@ -206,3 +206,4 @@ Kymograph 数据使用自定义 Python 软件 OTPlotViewer (v1.0.1; https://gith
 No license file is included in this archived version. Add a license before public redistribution if required by your publication or institution.
 
 当前归档版本尚未包含许可证文件。如需公开长期分发，建议根据文章或单位要求补充许可证。
+
