@@ -34,10 +34,6 @@ if (-not (Test-Path $VersionFile)) {
     throw "Version file not found: $VersionFile"
 }
 
-if (-not (Test-Path $LibraryBin)) {
-    throw "Conda runtime directory not found: $LibraryBin"
-}
-
 $distMode = if ($OneFile) { "--onefile" } else { "--onedir" }
 $PyInstallerArgs = @(
     "-m", "PyInstaller",
@@ -55,13 +51,18 @@ $PyInstallerArgs = @(
     "--hidden-import", "tkinter"
 )
 
-foreach ($dllName in $RuntimeDlls) {
-    $dllPath = Join-Path $LibraryBin $dllName
-    if (-not (Test-Path $dllPath)) {
-        throw "Required runtime DLL not found: $dllPath"
+if (Test-Path $LibraryBin) {
+    foreach ($dllName in $RuntimeDlls) {
+        $dllPath = Join-Path $LibraryBin $dllName
+        if (Test-Path $dllPath) {
+            $PyInstallerArgs += "--add-binary"
+            $PyInstallerArgs += "$dllPath;."
+        } else {
+            Write-Warning "Optional conda runtime DLL not found, skipping: $dllPath"
+        }
     }
-    $PyInstallerArgs += "--add-binary"
-    $PyInstallerArgs += "$dllPath;."
+} else {
+    Write-Host "Conda runtime directory not found, skipping explicit conda DLL additions: $LibraryBin"
 }
 
 $PyInstallerArgs += $MainScript

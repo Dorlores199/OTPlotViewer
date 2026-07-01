@@ -28,7 +28,12 @@ $PayloadDir = Join-Path $BuildDir "payload"
 Remove-Item -LiteralPath $BuildDir -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $PayloadDir -Force | Out-Null
 
-Copy-Item -LiteralPath $InstallScript -Destination (Join-Path $PayloadDir "install.ps1") -Force
+$VersionText = $Version.TrimStart("v")
+$AssetPrefix = "OTPlotViewer_${Version}_windows_folder_split.7z"
+$InstallScriptText = Get-Content -LiteralPath $InstallScript -Raw -Encoding UTF8
+$InstallScriptText = $InstallScriptText -replace '\$Version = "[^"]+"', ('$Version = "' + $Version + '"')
+$InstallScriptText = $InstallScriptText -replace '\$AssetPrefix = "[^"]+"', ('$AssetPrefix = "' + $AssetPrefix + '"')
+Set-Content -LiteralPath (Join-Path $PayloadDir "install.ps1") -Value $InstallScriptText -Encoding UTF8
 Copy-Item -LiteralPath $SevenZip -Destination (Join-Path $PayloadDir "7z.exe") -Force
 Copy-Item -LiteralPath $SevenZipDll -Destination (Join-Path $PayloadDir "7z.dll") -Force
 
@@ -47,7 +52,6 @@ RunProgram="powershell.exe -NoProfile -ExecutionPolicy Bypass -File install.ps1"
 ;!@InstallEnd@!
 "@ | Set-Content -LiteralPath $ConfigPath -Encoding UTF8
 
-$VersionText = $Version.TrimStart("v")
 $OutputExe = Join-Path $OutputDir "OTPlotViewer_Setup_$VersionText.exe"
 if (Test-Path -LiteralPath $OutputExe) {
     Remove-Item -LiteralPath $OutputExe -Force

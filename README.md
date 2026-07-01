@@ -173,6 +173,24 @@ The folder distribution is recommended for sharing because scientific Python app
 
 推荐使用文件夹版进行分发，因为科学计算 Python 程序通常包含较多原生依赖库，文件夹版比单文件版更稳定。
 
+## CI/CD And Releases / 自动检查与发布
+
+This repository includes GitHub Actions workflows:
+
+- `CI`: checks Python and PowerShell files on every push to `main`.
+- `Release`: builds Windows packages and publishes a GitHub Release when a version tag such as `v1.0.3` is pushed.
+
+Release metadata is checked before publishing. Update `README.md`, `CITATION.cff`, `version_info.txt`, and `docs/release_vX.Y.Z.md` before creating a tag.
+
+See [`docs/releasing.md`](docs/releasing.md) for the full release checklist.
+
+本仓库已经包含 GitHub Actions：
+
+- `CI`：每次推送到 `main` 时检查 Python 和 PowerShell 文件。
+- `Release`：推送类似 `v1.0.3` 的版本 tag 后，自动构建 Windows 包并发布 GitHub Release。
+
+发布前需要同步更新 `README.md`、`CITATION.cff`、`version_info.txt` 和 `docs/release_vX.Y.Z.md`。完整流程见 [`docs/releasing.md`](docs/releasing.md)。
+
 ## Suggested Citation / 论文引用建议
 
 Repository URL:
